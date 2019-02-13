@@ -54,34 +54,83 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="29f-DB-Kxn">
-                                <rect key="frame" x="0.0" y="20" width="768" height="1004"/>
+                                <rect key="frame" x="0.0" y="108" width="768" height="916"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tq9-vl-aE2" customClass="EmojiArtview" customModule="EmojiDragDrop" customModuleProvider="target">
+                                    <scrollView verifyAmbiguity="off" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1qd-qp-UVB">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="1004"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </view>
+                                        <constraints>
+                                            <constraint firstAttribute="height" priority="250" constant="1004" id="EEf-j4-0sc"/>
+                                            <constraint firstAttribute="width" priority="250" constant="768" id="VMh-Zg-xip"/>
+                                        </constraints>
+                                    </scrollView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="Tq9-vl-aE2" secondAttribute="trailing" id="OBS-i3-hiQ"/>
-                                    <constraint firstAttribute="bottom" secondItem="Tq9-vl-aE2" secondAttribute="bottom" id="ZWe-yi-R5c"/>
-                                    <constraint firstItem="Tq9-vl-aE2" firstAttribute="leading" secondItem="29f-DB-Kxn" secondAttribute="leading" id="wcW-yt-fzo"/>
-                                    <constraint firstItem="Tq9-vl-aE2" firstAttribute="top" secondItem="29f-DB-Kxn" secondAttribute="top" id="yIj-ey-3s0"/>
+                                    <constraint firstItem="1qd-qp-UVB" firstAttribute="top" relation="greaterThanOrEqual" secondItem="29f-DB-Kxn" secondAttribute="top" id="417-qx-SG9"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="1qd-qp-UVB" secondAttribute="bottom" id="7mt-be-fKh"/>
+                                    <constraint firstItem="1qd-qp-UVB" firstAttribute="centerY" secondItem="29f-DB-Kxn" secondAttribute="centerY" id="EKr-LO-GBv"/>
+                                    <constraint firstItem="1qd-qp-UVB" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="29f-DB-Kxn" secondAttribute="leading" id="bJG-zr-JaL"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="1qd-qp-UVB" secondAttribute="trailing" id="iZM-On-hVy"/>
+                                    <constraint firstItem="1qd-qp-UVB" firstAttribute="centerX" secondItem="29f-DB-Kxn" secondAttribute="centerX" id="uqp-Wf-0W3"/>
                                 </constraints>
                             </view>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="SiK-RY-5ZA">
+                                <rect key="frame" x="0.0" y="20" width="768" height="80"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="qWl-qn-9Kl"/>
+                                </constraints>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="5zd-tR-2Tf">
+                                    <size key="itemSize" width="80" height="80"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="EmojiCell" id="Esb-Vm-adx" customClass="EmojiCollectionViewCell" customModule="EmojiDragDrop" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                            <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🥺" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rzo-T2-JLy">
+                                                    <rect key="frame" x="5.5" y="2" width="69" height="76.5"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="64"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstItem="Rzo-T2-JLy" firstAttribute="centerX" secondItem="Esb-Vm-adx" secondAttribute="centerX" id="Ajf-ku-43n"/>
+                                            <constraint firstItem="Rzo-T2-JLy" firstAttribute="centerY" secondItem="Esb-Vm-adx" secondAttribute="centerY" id="oNs-10-awL"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="label" destination="Rzo-T2-JLy" id="Vzn-iK-Jy5"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="29f-DB-Kxn" secondAttribute="trailing" id="2eO-jB-E6A"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="29f-DB-Kxn" secondAttribute="bottom" id="Do6-Vx-CVu"/>
-                            <constraint firstItem="29f-DB-Kxn" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="vYG-YY-QvR"/>
+                            <constraint firstItem="29f-DB-Kxn" firstAttribute="top" secondItem="SiK-RY-5ZA" secondAttribute="bottom" constant="8" symbolic="YES" id="eE8-C0-T8Q"/>
+                            <constraint firstItem="SiK-RY-5ZA" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="gHh-mH-Dfz"/>
+                            <constraint firstItem="SiK-RY-5ZA" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="m7Y-Wv-vhS"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="SiK-RY-5ZA" secondAttribute="trailing" id="ndX-WN-OoT"/>
                             <constraint firstItem="29f-DB-Kxn" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="x2R-3A-aH7"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
                         <outlet property="dropZoneView" destination="29f-DB-Kxn" id="Od5-gD-68Q"/>
-                        <outlet property="emojiArtView" destination="Tq9-vl-aE2" id="B0e-87-dcS"/>
+                        <outlet property="emojiCollectionView" destination="SiK-RY-5ZA" id="Nei-FB-3Hd"/>
+                        <outlet property="scrollView" destination="1qd-qp-UVB" id="7VF-bA-egd"/>
+                        <outlet property="scrollViewHeight" destination="EEf-j4-0sc" id="r3V-3f-SHL"/>
+                        <outlet property="scrollViewWidth" destination="VMh-Zg-xip" id="29Z-TC-PRi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
