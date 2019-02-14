@@ -8,8 +8,8 @@
 
 import UIKit
 
-class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
-  
+class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDragDelegate, UICollectionViewDropDelegate {
+    
 
     @IBOutlet weak var dropZoneView: UIView! {
         didSet {
@@ -27,6 +27,8 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
         didSet {
             emojiCollectionView.delegate = self
             emojiCollectionView.dataSource = self
+            emojiCollectionView.dragDelegate = self
+            emojiCollectionView.dropDelegate = self
         }
     }
     
@@ -111,5 +113,71 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
         cell.label.attributedText = text
         return cell
     }
+    
+    //mark: - Drag Delegate.
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        print("itemsForBeginning")
+        return dragItem(at: indexPath)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
+        print("itemsForAddingTo")
+        return dragItem(at: indexPath)
+    }
+    
+    private func dragItem(at index: IndexPath) -> [UIDragItem]{
+        guard let attributeString = emoji(at: index) else { return [] }
+        let dragItem = UIDragItem(itemProvider: NSItemProvider(object: attributeString))
+        dragItem.localObject = attributeString
+        return [dragItem]
+    }
+    
+    private func emoji(at index: IndexPath) -> NSAttributedString? {
+        guard let emojiCell: EmojiCollectionViewCell =
+            self.emojiCollectionView.cellForItem(at: index) as? EmojiCollectionViewCell,
+            let emojiText = emojiCell.label.attributedText else { return nil }
+        return emojiText
+    }
+    
+    // MARk: - Drop Delegate.
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        let destinationIndexPath = coordinator.destinationIndexPath ?? IndexPath(item: 0, section: 0)
+        //qndo dragdrop mais de 1
+        for item in coordinator.items {
+            
+            if let sourceIndexPath = item.sourceIndexPath { //drag dentro do app
+                
+                guard let attributedString = item.dragItem.localObject as? NSAttributedString else { continue }
+            
+                //animation da CollectionView.
+                collectionView.performBatchUpdates({
+                    emojis.remove(at: sourceIndexPath.item)
+                    emojis.insert(attributedString.string, at: destinationIndexPath.item)
+                    collectionView.deleteItems(at: [sourceIndexPath])
+                    collectionView.insertItems(at: [destinationIndexPath])
+                })
+                //animation do drop
+                coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
+            
+            } else { //drag fora do app
+                
+            }
+        }
+    }
+    // primeiro passo, serve para pegar o elemento... so pegaremos o objeto do tipo NSAttributedString
+    func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
+        return session.canLoadObjects(ofClass: NSAttributedString.self)
+    }
+    
+    //Altera a sessao quando navega com o drag, para soltar.
+    func collectionView(_ collectionView: UICollectionView,
+                        dropSessionDidUpdate session: UIDropSession,
+                        withDestinationIndexPath destinationIndexPath: IndexPath?)
+        -> UICollectionViewDropProposal {
+            
+        let isSelf = (session.localDragSession?.localContext as? UICollectionView) == collectionView
+        return UICollectionViewDropProposal(operation: isSelf ? .move : .copy, intent: .insertAtDestinationIndexPath)
+    }
+    
 }
 
