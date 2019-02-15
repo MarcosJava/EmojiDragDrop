@@ -160,6 +160,9 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
                 coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
             
             } else { //drag fora do app
+                let dropPlaceholder = UICollectionViewDropPlaceholder(insertionIndexPath: destinationIndexPath, reuseIdentifier: "DropPlaceholderCell")
+                
+                let placeholderContext = coordinator.drop(item.dragItem, to: dropPlaceholder)
                 
             }
         }
