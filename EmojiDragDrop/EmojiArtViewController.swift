@@ -19,7 +19,7 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
     @IBOutlet weak var scrollViewHeight: NSLayoutConstraint!
     @IBOutlet weak var scrollViewWidth: NSLayoutConstraint!
     
-    var emojiArtView = EmojiArtview()
+    var emojiArtView = EmojiArtView()
     var imageFetcher: ImageFetcher!
     
     
@@ -163,7 +163,17 @@ class EmojiArtViewController: UIViewController, UIDropInteractionDelegate, UIScr
                 let dropPlaceholder = UICollectionViewDropPlaceholder(insertionIndexPath: destinationIndexPath, reuseIdentifier: "DropPlaceholderCell")
                 
                 let placeholderContext = coordinator.drop(item.dragItem, to: dropPlaceholder)
-                
+                item.dragItem.itemProvider.loadObject(ofClass: NSAttributedString.self) { (provider, error) in
+                    DispatchQueue.main.async {
+                        guard let attributedString = provider as? NSAttributedString else {
+                            placeholderContext.deletePlaceholder()
+                            return
+                        }
+                        placeholderContext.commitInsertion(dataSourceUpdates: { insertionIndexPath in
+                            self.emojis.insert(attributedString.string, at: insertionIndexPath.item)
+                        })
+                    }
+                }
             }
         }
     }
