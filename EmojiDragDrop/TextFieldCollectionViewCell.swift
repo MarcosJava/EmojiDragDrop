@@ -8,6 +8,24 @@
 
 import UIKit
 
-class TextFieldCollectionViewCell: UICollectionViewCell {
+class TextFieldCollectionViewCell: UICollectionViewCell, UITextFieldDelegate {
+    
+    @IBOutlet weak var textField: UITextField! {
+        didSet {
+            textField.delegate = self
+        }
+    }
+    
+    var resignedHandle: (()-> Void)?
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        resignedHandle?()
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        print("Got here")
+        textField.resignFirstResponder()
+        return true
+    }
     
 }
