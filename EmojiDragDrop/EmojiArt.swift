@@ -8,12 +8,16 @@
 
 import UIKit
 
-struct EmojiArt {
+struct EmojiArt: Codable {
     
     var url: URL
     var emojis = [EmojiInfo]()
     
-    struct EmojiInfo {
+    var json: Data? {
+        return try? JSONEncoder().encode(self)
+    }
+    
+    struct EmojiInfo: Codable {
         let x: Int
         let y: Int
         let text: String
@@ -22,6 +26,11 @@ struct EmojiArt {
     init(url: URL, emojis: [EmojiInfo]) {
         self.url = url
         self.emojis = emojis
+    }
+    
+    init?(json: Data) {
+        guard let newValue = try? JSONDecoder().decode(EmojiArt.self, from: json) else { return nil }
+        self = newValue
     }
     
 }

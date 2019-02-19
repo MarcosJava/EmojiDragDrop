@@ -95,12 +95,53 @@ class EmojiArtViewController: UIViewController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        loadFileJson()
+    }
+    
+    private func loadFileJson() {
+        guard let url = try? FileManager.default.url(for: .documentDirectory,
+                                                     in: .userDomainMask,
+                                                     appropriateFor: nil,
+                                                     create: true)
+            .appendingPathComponent("Untitled.json") else { return }
+        
+        
+        guard let jsonData = try? Data(contentsOf: url) else { return }
+        self.emojiArt = EmojiArt(json: jsonData)
+    }
+    
     private var addingEmoji = false
     @IBAction func addEmoji(_ sender: UIButton) {
         addingEmoji = true
         emojiCollectionView.reloadSections(IndexSet(integer: 0))
     }
-
+    @IBAction func saveButton(_ sender: UIBarButtonItem) {
+        if let json = self.emojiArt?.json {
+            
+            if let url = try? FileManager.default.url(for: .documentDirectory,
+                                                      in: .userDomainMask,
+                                                      appropriateFor: nil,
+                                                      create: true) {
+                
+                let urlCompleted = url.appendingPathComponent("Untitled.json")
+                
+                do {
+                    try json.write(to: urlCompleted)
+                    print("Save with success")
+                } catch let error {
+                    print("couldn't save \(error)")
+                }
+                
+            }
+            
+            if let jsonString = String(data: json, encoding: .utf8) {
+                print(jsonString)
+            }
+        }
+    }
+    
     private func attributedStringEmoji(at index: IndexPath) -> NSAttributedString? {
         guard let emojiCell: EmojiCollectionViewCell =
             self.emojiCollectionView.cellForItem(at: index) as? EmojiCollectionViewCell,
