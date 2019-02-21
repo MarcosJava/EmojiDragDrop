@@ -108,7 +108,10 @@ class EmojiArtViewController: UIViewController {
     //Close the file for open others
     @IBAction func closeButton(_ sender: UIBarButtonItem) {
         self.saveButton()
-        self.document?.close()
+        dismiss(animated: true) {  [weak self] in
+            self?.document?.close()
+        }
+        
     }
     
     //Save in file

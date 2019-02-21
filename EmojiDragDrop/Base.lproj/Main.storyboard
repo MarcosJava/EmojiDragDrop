@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pIk-pp-3L8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="sqg-VW-zss">
     <device id="ipad9_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -236,7 +236,7 @@
         <!--Split View Controller-->
         <scene sceneID="qvV-2U-zuX">
             <objects>
-                <splitViewController id="pIk-pp-3L8" sceneMemberID="viewController">
+                <splitViewController storyboardIdentifier="splitMVC" id="pIk-pp-3L8" sceneMemberID="viewController">
                     <connections>
                         <segue destination="hAj-gy-eot" kind="relationship" relationship="detailViewController" id="fkg-Gf-5aN"/>
                         <segue destination="gJQ-Gx-Bg3" kind="relationship" relationship="masterViewController" id="4pd-IY-PlR"/>
@@ -284,6 +284,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="PT0-p3-lZC"/>
+        <segue reference="fkg-Gf-5aN"/>
     </inferredMetricsTieBreakers>
 </document>
