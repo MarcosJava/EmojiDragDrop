@@ -52,8 +52,11 @@ class EmojiArtView: UIView, UIDropInteractionDelegate {
         addSubview(label)
     }
     
+}
+
+//MARK: - Recognize Gesture
+extension EmojiArtView {
     
-    //MARK: - Recognize Gesture
     func addEmojiArtGestureRecognizers(to view: UIView) {
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.selectSubview(by:))))

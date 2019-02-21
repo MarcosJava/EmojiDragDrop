@@ -95,29 +95,57 @@ class EmojiArtViewController: UIViewController {
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(true)
-        loadFileJson()
-    }
     
-    private func loadFileJson() {
-        guard let url = try? FileManager.default.url(for: .documentDirectory,
-                                                     in: .userDomainMask,
-                                                     appropriateFor: nil,
-                                                     create: true)
-            .appendingPathComponent("Untitled.json") else { return }
-        
-        
-        guard let jsonData = try? Data(contentsOf: url) else { return }
-        self.emojiArt = EmojiArt(json: jsonData)
-    }
     
     private var addingEmoji = false
     @IBAction func addEmoji(_ sender: UIButton) {
         addingEmoji = true
         emojiCollectionView.reloadSections(IndexSet(integer: 0))
     }
-    @IBAction func saveButton(_ sender: UIBarButtonItem) {
+    
+    var document: EmojiArtDocument?
+    
+    //Close the file for open others
+    @IBAction func closeButton(_ sender: UIBarButtonItem) {
+        self.saveButton()
+        self.document?.close()
+    }
+    
+    //Save in file
+    @IBAction func saveButton(_ sender: UIBarButtonItem? = nil) {
+        //saveWithFileManager()
+        self.document?.emojiArt = emojiArt
+        if self.document?.emojiArt != nil {
+            self.document?.updateChangeCount(.done)
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        //loadJsonFileManager()
+        document?.open { [weak self] success in
+            if success {
+                self?.title = self?.document?.localizedName
+                self?.emojiArt = self?.document?.emojiArt
+            }
+        }
+    }
+
+    //Init o Document
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        if let url = try? FileManager.default.url(
+//            for: .documentDirectory,
+//            in: .userDomainMask,
+//            appropriateFor: nil,
+//            create: true
+//        ).appendingPathComponent("Untitled.json") {
+//            self.document = EmojiArtDocument(fileURL: url)
+//        }
+//    }
+    
+    
+    private func saveWithFileManager() {
         if let json = self.emojiArt?.json {
             
             if let url = try? FileManager.default.url(for: .documentDirectory,
@@ -140,6 +168,18 @@ class EmojiArtViewController: UIViewController {
                 print(jsonString)
             }
         }
+    }
+    
+    private func loadJsonFileManager() {
+        guard let url = try? FileManager.default.url(for: .documentDirectory,
+                                                     in: .userDomainMask,
+                                                     appropriateFor: nil,
+                                                     create: true)
+            .appendingPathComponent("Untitled.json") else { return }
+        
+        
+        guard let jsonData = try? Data(contentsOf: url) else { return }
+        self.emojiArt = EmojiArt(json: jsonData)
     }
     
     private func attributedStringEmoji(at index: IndexPath) -> NSAttributedString? {

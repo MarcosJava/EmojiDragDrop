@@ -8,15 +8,19 @@
 
 import UIKit
 
-class Document: UIDocument {
+class EmojiArtDocument: UIDocument {
     
+    var emojiArt: EmojiArt?
+    
+    // Encode your document with an instance of NSData or NSFileWrapper
     override func contents(forType typeName: String) throws -> Any {
-        // Encode your document with an instance of NSData or NSFileWrapper
-        return Data()
+        return self.emojiArt?.json ?? Data()
     }
     
+    // Load your document from contents
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        // Load your document from contents
+        guard let json = contents as? Data else { return }
+        self.emojiArt = EmojiArt(json: json)
     }
 }
 
