@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import os.log
 
 class EmojiArtViewController: UIViewController {
     
@@ -72,8 +72,9 @@ class EmojiArtViewController: UIViewController {
         return UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont.preferredFont(forTextStyle: .body).withSize(64.0))
     }
     
-    var emojis = "🐒🐥🐘🦍🦢🦜🐶".map {String($0)}
-    var emojiArtView = EmojiArtView()
+    var emojis = "🦁🐒🐥🐘🦉🐷🐝🦋🐴🐗🐧🐸🐼🐻🐔🐮🐯🦍🦢🐹🦜🐶".map {String($0)}
+    var emojiArtView: EmojiArtView = EmojiArtView()
+    
     var imageFetcher: ImageFetcher!
     
     
@@ -83,6 +84,9 @@ class EmojiArtViewController: UIViewController {
             emojiCollectionView.dataSource = self
             emojiCollectionView.dragDelegate = self
             emojiCollectionView.dropDelegate = self
+            
+            //para iPhone
+            emojiCollectionView.dragInteractionEnabled = true
         }
     }
     
@@ -108,6 +112,9 @@ class EmojiArtViewController: UIViewController {
     //Close the file for open others
     @IBAction func closeButton(_ sender: UIBarButtonItem) {
         self.saveButton()
+        if document?.emojiArt != nil {
+            document?.thumbnail = emojiArtView.snapshot
+        }
         dismiss(animated: true) {  [weak self] in
             self?.document?.close()
         }
@@ -122,15 +129,52 @@ class EmojiArtViewController: UIViewController {
             self.document?.updateChangeCount(.done)
         }
     }
+    private var documentObserver: NSObjectProtocol?
+    private var emojiArtObserver: NSObjectProtocol?
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         //loadJsonFileManager()
+        
+        documentObserver = NotificationCenter.default.addObserver(
+            forName: .UIDocumentStateChanged,
+            object: document,
+            queue: OperationQueue.main,
+            using: { [weak self] notification in
+                print("documentState chage to \(self?.document?.documentState)")
+        })
+        
+        emojiArtObserver = NotificationCenter.default.addObserver(
+            forName: .emojiArtViewDidChange,
+            object: self.emojiArtView,
+            queue: OperationQueue.main,
+            using: { [weak self] notification in
+                self?.documentChanged()
+        })
+        
         document?.open { [weak self] success in
             if success {
                 self?.title = self?.document?.localizedName
                 self?.emojiArt = self?.document?.emojiArt
             }
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        if let documentObserver = self.documentObserver {
+            NotificationCenter.default.removeObserver(documentObserver)
+        }
+        if let emojiArtObserver = self.emojiArtObserver {
+            NotificationCenter.default.removeObserver(emojiArtObserver)
+        }
+    }
+    private func documentChanged() {
+        os_log("salvando o doc.", log: OSLog.default, type: .debug)
+        
+        document?.emojiArt = emojiArt
+        if document?.emojiArt != nil {
+            document?.updateChangeCount(.done)
         }
     }
 
@@ -147,6 +191,27 @@ class EmojiArtViewController: UIViewController {
 //        }
 //    }
     
+    private var supressBadURLWarnings = false
+    private func presentBadURLWarning(for url: URL?) {
+        
+        guard !supressBadURLWarnings else { return }
+        
+        let alert = UIAlertController(title: "Image Transfer Failed",
+                                      message: "Couldn't transfer the dropped image from its source",
+                                      preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Keep Warning",
+                                      style: .default))
+        
+        alert.addAction(UIAlertAction(
+            title: "Stop Warning",
+            style: .destructive,
+            handler: { action in
+                self.supressBadURLWarnings = true
+        }))
+        
+        present(alert, animated: true)
+    }
     
     private func saveWithFileManager() {
         if let json = self.emojiArt?.json {
@@ -193,6 +258,13 @@ class EmojiArtViewController: UIViewController {
     }
     
 }
+
+//MARK: - EmojiArtViewDelegate
+//extension EmojiArtViewController: EmojiArtViewDelegate {
+//    func emojiArtViewDidChange(_ sender: EmojiArtView) {
+//        documentChanged()
+//    }
+//}
 
 //MARK: - UICollectionViewDelegate
 extension EmojiArtViewController: UICollectionViewDelegate {
@@ -295,7 +367,19 @@ extension EmojiArtViewController: UIDropInteractionDelegate {
         
         session.loadObjects(ofClass: NSURL.self) { urls in
             guard let url = urls.first as? URL else { return }
-            self.imageFetcher.fetch(url)
+            DispatchQueue.global(qos: .userInitiated).async {
+                if let dataImage = try? Data(contentsOf: url.imageURL), let image = UIImage(data: dataImage) {
+                    DispatchQueue.main.async {
+                        self.emojiArtBackgroundImage = (url, image)
+                        self.documentChanged()
+                    }
+                } else {
+                    self.presentBadURLWarning(for: url)
+                }
+                
+            }
+            
+//            self.imageFetcher.fetch(url)
         }
         session.loadObjects(ofClass: UIImage.self) { images in
             guard let image = images.first as? UIImage else { return }

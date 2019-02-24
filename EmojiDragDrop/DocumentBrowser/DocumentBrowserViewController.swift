@@ -17,23 +17,26 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         delegate = self
         allowsDocumentCreation = false
         allowsPickingMultipleItems = false
-        browserUserInterfaceStyle = .dark
+        
+        
+        //browserUserInterfaceStyle = .light
         
         // Update the style of the UIDocumentBrowserViewController
         // view.tintColor = .white
         // Specify the allowed content types of your application via the Info.plist.
         // Do any additional setup after loading the view, typically from a nib.
         
-        
-        template = try? FileManager.default.url(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: true
-        ).appendingPathComponent("Untitled.json ")
-        
-        if template != nil {
-            allowsDocumentCreation = FileManager.default.createFile(atPath: template!.path, contents: Data())
+        if UIDevice.current.userInterfaceIdiom == .pad { //So pode criar image via iPad
+            template = try? FileManager.default.url(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: true
+            ).appendingPathComponent("Untitled.json")
+            
+            if template != nil {
+                allowsDocumentCreation = FileManager.default.createFile(atPath: template!.path, contents: Data())
+            }
         }
         
     }
@@ -68,12 +71,15 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     
     func presentDocument(at documentURL: URL) {
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-        guard let documentVC = storyBoard.instantiateViewController(withIdentifier: "splitMVC") as? UISplitViewController else { return }
+        guard let splitView = storyBoard.instantiateViewController(withIdentifier: "splitMVC") as? UISplitViewController else { return }
         
-        if let emojiArtViewController = documentVC.contents as? EmojiArtViewController {
+        guard let navView = splitView.viewControllers[1] as? UINavigationController else { return }
+        
+        
+        if let emojiArtViewController = navView.viewControllers.first as? EmojiArtViewController {
             emojiArtViewController.document = EmojiArtDocument(fileURL: documentURL)
         }
-        present(documentVC, animated: true)
+        present(splitView, animated: true)
     }
 }
 

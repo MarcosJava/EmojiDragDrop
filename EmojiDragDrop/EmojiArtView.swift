@@ -8,6 +8,14 @@
 
 import UIKit
 
+protocol EmojiArtViewDelegate: AnyObject {
+    func emojiArtViewDidChange(_ sender: EmojiArtView)
+}
+
+extension Notification.Name {
+    static let emojiArtViewDidChange = Notification.Name("emojiArtViewDidChange")
+}
+
 class EmojiArtView: UIView, UIDropInteractionDelegate {
     
     var backgroundImage: UIImage? {
@@ -16,6 +24,8 @@ class EmojiArtView: UIView, UIDropInteractionDelegate {
         }
     }
 
+    weak var delegate: EmojiArtViewDelegate?
+    
     override func draw(_ rect: CGRect) {
         backgroundImage?.draw(in: bounds)
         setup()
@@ -38,9 +48,14 @@ class EmojiArtView: UIView, UIDropInteractionDelegate {
             let dropPoint = session.location(in: self)
             for attributedString in providers as? [NSAttributedString] ?? [] {
                 self.addLabel(with: attributedString, centeredAt: dropPoint)
+                self.delegate?.emojiArtViewDidChange(self)
+                NotificationCenter.default.post(name: .emojiArtViewDidChange, object: self)
             }
         }
     }
+    
+    //Create for leave the heap
+    private var labelObservations = [UIView: NSKeyValueObservation]()
     
     func addLabel(with attributeString: NSAttributedString, centeredAt point: CGPoint) {
         let label = UILabel()
@@ -50,6 +65,19 @@ class EmojiArtView: UIView, UIDropInteractionDelegate {
         label.center = point
         addEmojiArtGestureRecognizers(to: label)
         addSubview(label)
+        
+        labelObservations[label] = label.observe(\.center) { (label, change) in
+            self.delegate?.emojiArtViewDidChange(self)
+            NotificationCenter.default.post(name: .emojiArtViewDidChange, object: self)
+        }
+    }
+    
+    //Leaving the heap
+    override func willRemoveSubview(_ subview: UIView) {
+        super.willRemoveSubview(subview)
+        if labelObservations[subview] != nil {
+            labelObservations[subview] = nil
+        }
     }
     
 }
@@ -92,6 +120,7 @@ extension EmojiArtView {
             if selectedSubview != nil {
                 recognizer.view?.center = recognizer.view!.center.offset(by: recognizer.translation(in: self))
                 recognizer.setTranslation(CGPoint.zero, in: self)
+                
             }
         default:
             break
@@ -132,8 +161,7 @@ extension EmojiArtView {
             if let label = selectedSubview as? UILabel {
                 label.attributedText = label.attributedText?.withFontScaled(by: recognizer.scale)
                 label.stretchToFit()
-                recognizer.scale = 1.0
-            }
+                recognizer.scale = 1.0            }
         default:
             break
         }
@@ -144,7 +172,6 @@ extension EmojiArtView {
             if let view = recognizer.view, let index = subviews.index(of: view) {
                 selectedSubview = view
                 exchangeSubview(at: 0, withSubviewAt: index)
-                //delegate?.emojiArtViewDidChange(self)
             }
         }
     }
