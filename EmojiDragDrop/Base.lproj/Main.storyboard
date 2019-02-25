@@ -200,13 +200,14 @@
                                 <action selector="closeButton:" destination="BYZ-38-t0r" id="8UI-ov-JNF"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="aYp-F1-SR8">
+                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="aYp-F1-SR8">
                             <connections>
-                                <action selector="saveButton:" destination="BYZ-38-t0r" id="GgQ-lQ-88M"/>
+                                <action selector="cameraButtonDidTap:" destination="BYZ-38-t0r" id="Scr-Ck-jNI"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="cameraButton" destination="aYp-F1-SR8" id="Trc-hd-Coe"/>
                         <outlet property="dropZoneView" destination="29f-DB-Kxn" id="Od5-gD-68Q"/>
                         <outlet property="emojiCollectionView" destination="SiK-RY-5ZA" id="Nei-FB-3Hd"/>
                         <outlet property="scrollView" destination="1qd-qp-UVB" id="7VF-bA-egd"/>
